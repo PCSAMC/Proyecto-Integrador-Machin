@@ -1,0 +1,22 @@
+{
+  "dataset_name": "Ames Housing",
+  "openml_id": 41211,
+  "source_url": "https://www.openml.org/search?type=data&status=active&id=41211",
+  "author": "Dean De Cock, Truman State University (2011)",
+  "reference": "De Cock, D. (2011). Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project. Journal of Statistics Education, 19(3).",
+  "r_package": "AmesHousing - make_ames() by Max Kuhn (2017)",
+  "download_date": "PENDIENTE - se actualiza al ejecutar data_loader.py",
+  "n_rows": 2930,
+  "n_cols": 81,
+  "target_col": "Sale_Price",
+  "sampling_criteria": "Sin muestreo. Se usa el dataset completo de 2930 instancias.",
+  "outliers_removed": "Propiedades con Gr_Liv_Area > 4000 ft2 y Sale_Price < 300000 (ventas atipicas, recomendado por De Cock 2011)",
+  "split": {
+    "train": "70%",
+    "val": "15%",
+    "test": "15%",
+    "strategy": "Estratificada por bins de precio (pd.qcut, 5 bins)",
+    "random_state": 42
+  },
+  "version_notes": "Version procesada por make_ames() del paquete R AmesHousing. Todos los factores son NO ordenados."
+}

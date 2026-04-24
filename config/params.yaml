@@ -1,0 +1,68 @@
+# ============================================================
+# Grupo 4 — Ames Housing
+# Archivo de configuración centralizado
+# Todos los notebooks y scripts leen estos parámetros
+# ============================================================
+
+# ── Reproducibilidad ───────────────────────────────────────
+random_state: 42
+
+# ── Dataset ────────────────────────────────────────────────
+dataset:
+  openml_id: 41211
+  target_col: "Sale_Price"
+  outlier_threshold_grlivarea: 4000   # ft² — excluir propiedades atípicas
+
+# ── Partición ──────────────────────────────────────────────
+split:
+  train_ratio: 0.70
+  val_ratio:   0.15
+  test_ratio:  0.15
+  n_price_bins: 5                     # bins para estratificación
+
+# ── Preprocesamiento ───────────────────────────────────────
+preprocessing:
+  log_transform_target: true          # aplicar log1p a Sale_Price
+  log_transform_features:             # variables con skew > 1
+    - Gr_Liv_Area
+    - Lot_Area
+    - Total_Bsmt_SF
+    - First_Flr_SF
+
+# ── Modelos clásicos ───────────────────────────────────────
+models:
+  ridge:
+    alphas: [0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
+  lasso:
+    alphas: [0.0001, 0.001, 0.01, 0.1, 1.0]
+  random_forest:
+    n_estimators: 300
+    max_depth: null
+    min_samples_leaf: 2
+    n_jobs: -1
+  xgboost:
+    n_estimators: 500
+    learning_rate: 0.05
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+    early_stopping_rounds: 50
+
+# ── AutoML — FLAML ─────────────────────────────────────────
+automl:
+  time_budget: 300                    # segundos
+  metric: "rmse"
+  task: "regression"
+  log_file: "models/flaml_log.json"
+
+# ── Clustering ─────────────────────────────────────────────
+clustering:
+  k_range: [2, 3, 4, 5, 6, 7, 8]
+  k_final: 4                          # seleccionado por Elbow + Silhouette
+  features:
+    - Gr_Liv_Area
+    - Overall_Qual
+    - Year_Built
+    - Total_Bsmt_SF
+    - Garage_Cars
+    - Sale_Price
