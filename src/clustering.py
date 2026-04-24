@@ -208,12 +208,8 @@ def plot_cluster_pca(X_scaled: np.ndarray, labels: np.ndarray,
     return X_2d, pca
 
 
-def plot_cluster_boxplots(df: pd.DataFrame, labels: np.ndarray,
-                          features_to_plot: list, cluster_labels: dict,
-                          save_path: str = None):
-    """
-    Boxplots de variables clave por cluster para facilitar la interpretación.
-    """
+def plot_cluster_boxplots(df, labels, features_to_plot, cluster_labels,
+                          save_path=None):
     df_plot = df[features_to_plot].copy()
     df_plot["Cluster"] = [f"C{c}: {cluster_labels.get(c, '')}" for c in labels]
 
@@ -226,19 +222,18 @@ def plot_cluster_boxplots(df: pd.DataFrame, labels: np.ndarray,
 
     fig, axes = plt.subplots(nrows, ncols, figsize=(15, nrows * 4))
     axes = axes.flatten()
-    palette = sns.color_palette("Set2", n_colors=len(np.unique(labels)))
 
     for i, feat in enumerate(features_to_plot):
         if feat in df_plot.columns:
+            # Usar color en lugar de palette para evitar bug de seaborn
             sns.boxplot(
                 data=df_plot, x="Cluster", y=feat,
-                palette=palette, ax=axes[i], linewidth=1.2
+                ax=axes[i], linewidth=1.2, color='#2E74B5'
             )
             axes[i].set_title(feat, fontsize=11, fontweight="bold")
             axes[i].set_xlabel("")
             axes[i].tick_params(axis="x", rotation=15)
 
-    # Apagar ejes sobrantes
     for j in range(i + 1, len(axes)):
         axes[j].set_visible(False)
 
