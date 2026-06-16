@@ -155,17 +155,23 @@ def train_automl(X_train, y_train, X_val, y_val, cfg: dict):
     print(f"\n[AutoML] Iniciando FLAML con time_budget={automl_cfg['time_budget']}s ...")
     start_time = time.time()
 
-    automl.fit(
-        X_train, y_train,
-        task=automl_cfg["task"],
-        metric=automl_cfg["metric"],
-        time_budget=automl_cfg["time_budget"],
-        eval_method="cv",
-        n_splits=5,
-        seed=cfg["random_state"],
-        log_file_name=automl_cfg["log_file"],
-        verbose=0,
-    )
+    try:
+        automl.fit(
+            X_train, y_train,
+            task=automl_cfg["task"],
+            metric=automl_cfg["metric"],
+            time_budget=automl_cfg["time_budget"],
+            eval_method="cv",
+            n_splits=5,
+            seed=cfg["random_state"],
+            log_file_name=automl_cfg["log_file"],
+            verbose=0,
+        )
+    except Exception as e:
+        # Si FLAML falla (p.ej. incompatibilidad de versiones), no tumbamos el
+        # pipeline entero: devolvemos None y el notebook usa su rama de respaldo.
+        print(f"[AutoML] FLAML falló — se omite el benchmark. Causa: {type(e).__name__}: {e}")
+        return None, {}
 
     elapsed = time.time() - start_time
     print(f"[AutoML] Finalizado en {elapsed:.1f}s")
