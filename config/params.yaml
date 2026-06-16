@@ -48,12 +48,41 @@ models:
     colsample_bytree: 0.8
     early_stopping_rounds: 50
 
+# ── Deep Learning — MLP Tabular ───────────────────────────
+  mlp:
+    batch_size: 128
+    epochs: 200
+    patience: 20
+    lr: 0.001
+    dropout: 0.3
+
+# ── Deep Learning — Autoencoder Tabular ───────────────────
+  autoencoder:
+    latent_dim: 32
+    batch_size: 256
+    epochs: 150
+    patience: 20
+    lr: 0.001
+    dropout: 0.2
+
 # ── AutoML — FLAML ─────────────────────────────────────────
 automl:
   time_budget: 300                    # segundos
   metric: "rmse"
   task: "regression"
   log_file: "models/flaml_log.json"
+
+# ── MLflow ─────────────────────────────────────────────────
+mlflow:
+  tracking_uri: "sqlite:///mlflow.db"
+  experiment_name: "ames_housing_grupo4"
+  registered_model_name: "ames_price_predictor"
+
+# ── Similitud ───────────────────────────────────────────────
+similarity:
+  k_neighbors: 5
+  metric: "cosine"
+  n_queries_eval: 100
 
 # ── Clustering ─────────────────────────────────────────────
 clustering:

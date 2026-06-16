@@ -1,0 +1,5 @@
+# Forzar saltos de línea LF en scripts (necesario para Docker/Linux)
+*.sh    text eol=lf
+*.py    text eol=lf
+Dockerfile text eol=lf
+entrypoint.sh text eol=lf

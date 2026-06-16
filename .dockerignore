@@ -1,0 +1,15 @@
+# No copiar al contenedor lo pesado o lo que se regenera adentro
+.git/
+mlruns/
+mlflow.db
+models/
+data/processed/
+reports/figures/*.png
+!reports/figures/ucb_logo.png
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+scripts/
+~$*

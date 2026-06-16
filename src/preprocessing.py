@@ -35,8 +35,13 @@ QUALITY_MAP = {
     "Po": 1, "Fa": 2, "TA": 3, "Gd": 4, "Ex": 5
 }
 
-OVERALL_MAP = {str(i): i for i in range(1, 11)}
-# Overall_Qual y Overall_Cond vienen como category con valores "1".."10"
+OVERALL_MAP = {
+    "Very_Poor": 1, "Poor": 2, "Fair": 3, "Below_Average": 4,
+    "Average": 5, "Above_Average": 6, "Good": 7, "Very_Good": 8,
+    "Excellent": 9, "Very_Excellent": 10,
+    # Por si acaso vienen como numérico string
+    **{str(i): i for i in range(1, 11)}
+}
 
 EXPOSURE_MAP = {"No": 0, "No_Basement": 0, "Mn": 1, "Av": 2, "Gd": 3}
 
@@ -91,10 +96,10 @@ def apply_ordinal_mappings(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].astype(str).map(QUALITY_MAP).fillna(0).astype(int)
 
-    # Overall Qual / Cond: son category con valores "1".."10"
+    # Overall Qual / Cond: en OpenML vienen como texto ("Above_Average", etc.)
     for col in ["Overall_Qual", "Overall_Cond"]:
         if col in df.columns:
-            df[col] = df[col].astype(str).str.extract(r'(\d+)')[0].astype(float)
+            df[col] = df[col].astype(str).map(OVERALL_MAP).astype(float)
 
     if "Bsmt_Exposure" in df.columns:
         df["Bsmt_Exposure"] = df["Bsmt_Exposure"].astype(str).map(EXPOSURE_MAP).fillna(0)

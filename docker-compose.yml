@@ -1,0 +1,17 @@
+# ============================================================
+#  docker-compose.yml — Grupo 4 Ames Housing
+#  Levanta todo con un solo comando:  docker compose up
+# ============================================================
+services:
+  ames-housing:
+    build: .
+    container_name: ames_housing_grupo4
+    ports:
+      - "8501:8501"        # demo web Streamlit
+    volumes:
+      # Persisten los artefactos generados en tu máquina,
+      # para que el segundo arranque sea instantáneo.
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./mlruns:/app/mlruns

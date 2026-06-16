@@ -1,0 +1,44 @@
+# ============================================================
+#  .gitignore — Grupo 4 Ames Housing
+#  Todo lo que aquí aparece se GENERA automáticamente
+#  al correr el pipeline (no se versiona).
+# ============================================================
+
+# ── Datos procesados (los regenera el notebook 02 / preprocessing.py) ──
+data/processed/
+
+# ── Modelos y embeddings entrenados (los regeneran los notebooks 03–06) ──
+models/
+
+# ── Figuras y tablas exportadas (las regenera save_fig en los notebooks) ──
+reports/figures/*.png
+!reports/figures/ucb_logo.png
+reports/model_comparison.csv
+
+# ── MLflow (tracking; se regenera con el notebook 06) ──
+mlruns/
+mlflow.db
+mlartifacts/
+
+# ── Python / Jupyter ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.virtual_documents/
+
+# ── Entornos virtuales ──
+.venv/
+venv/
+env/
+
+# ── Herramientas internas de generación de documentos (no son parte del proyecto) ──
+scripts/
+
+# ── Artefactos temporales de ofimática ──
+~$*.docx
+~$*.pptx
+
+# ── Sistema operativo ──
+.DS_Store
+Thumbs.db
