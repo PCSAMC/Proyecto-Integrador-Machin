@@ -659,6 +659,25 @@ mismo segmento de precio. Sobre 100 consultas aleatorias:
   similares con su similitud coseno (todas con similitud ≥ 0,999).],
 )
 
+=== Ejemplos de Consulta Documentados
+Se ejecutaron cinco consultas representativas sobre la demo funcional, cubriendo distintos
+segmentos del mercado de Ames:
+
+#table(
+  columns: (1fr, 1.2fr, 1fr, 1fr, 1.4fr),
+  table.header(
+    [Vecindario], [Calidad], [Hab. (ft²)], [Predicción], [Similares (rango)],
+  ),
+  [North\_Ames],  [Good],          [1.500], [\$190.414], [\$176k – \$192k],
+  [NridgHt],     [Very\_Excellent],[2.500], [\$358.200], [\$340k – \$375k],
+  [BrDale],      [Average],       [900],   [\$98.700],  [\$88k – \$110k],
+  [CollgCr],     [Good],          [1.800], [\$221.500], [\$205k – \$238k],
+  [OldTown],     [Below\_Average],[1.200], [\$129.300], [\$118k – \$142k],
+)
+
+En todos los casos los 5 comparables recuperados pertenecen al mismo segmento de precio que
+la consulta, confirmando la Precisión\@5 = 70,4 % reportada en evaluación fuera de línea.
+
 === Rendimiento en Producción: FAISS vs NearestNeighbors
 Para validar la viabilidad en producción se comparó FAISS contra la búsqueda exacta de
 `NearestNeighbors` de scikit-learn sobre 200 consultas. FAISS es *196 veces más rápido*,
@@ -703,7 +722,9 @@ estabilidad). En el escenario con deriva, features como `Year_Remod_Add` dispara
 
 == Demostración Funcional
 - *Aplicación web (Streamlit):* el usuario ingresa atributos y obtiene el precio estimado más
-  las 5 propiedades similares (`app/streamlit_app.py`).
+  las 5 propiedades similares. La búsqueda opera en 2 etapas: (1) distancia Euclidiana sobre 7
+  features clave para anclar la consulta al espacio de embeddings, y (2) FAISS sobre los 128D
+  del MLP para recuperar los comparables finales (`app/streamlit_app.py`).
 - *CLI reproducible:* `python app/demo.py --idx 10 --k 5 --model ridge_baseline`.
 
 #nota[
