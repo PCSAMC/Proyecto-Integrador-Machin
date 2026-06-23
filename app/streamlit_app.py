@@ -376,17 +376,21 @@ if predict_btn:
 
             cards = ""
             for rank, (idx, price) in enumerate(zip(n_idx, n_prices), 1):
-                seg  = _h.escape(str(sim.segments[idx]))
-                rd   = raw_df.iloc[idx]
-                area = int(rd["Gr_Liv_Area"]) if "Gr_Liv_Area" in rd.index else "—"
-                qual = _h.escape(str(rd["Overall_Qual"])) if "Overall_Qual" in rd.index else "—"
-                yr   = int(rd["Year_Built"]) if "Year_Built" in rd.index else "—"
+                seg   = _h.escape(str(sim.segments[idx]))
+                rd    = raw_df.iloc[idx]
+                area  = int(rd["Gr_Liv_Area"])    if "Gr_Liv_Area"    in rd.index else "—"
+                qual  = _h.escape(str(rd["Overall_Qual"])) if "Overall_Qual" in rd.index else "—"
+                yr    = int(rd["Year_Built"])      if "Year_Built"     in rd.index else "—"
+                hood  = _h.escape(str(rd["Neighborhood"])) if "Neighborhood" in rd.index else "—"
+                bsmt  = int(rd["Total_Bsmt_SF"])   if "Total_Bsmt_SF"  in rd.index else "—"
+                cars  = int(rd["Garage_Cars"])      if "Garage_Cars"    in rd.index else "—"
                 cards += (
                     f'<div class="scard" style="animation-delay:{rank*0.05:.2f}s">'
                     f'<div class="sc-n" translate="no">0{rank}</div>'
                     f'<div class="sc-p" translate="no">${int(price):,}</div>'
                     f'<div class="sc-d" translate="no">{area} ft² &middot; {yr}</div>'
-                    f'<div class="sc-d">{qual}</div>'
+                    f'<div class="sc-d" translate="no">Sótano: {bsmt} ft² &middot; Garaje: {cars}</div>'
+                    f'<div class="sc-d">{qual} &middot; {hood}</div>'
                     f'<div class="sc-seg" translate="no">{seg}</div>'
                     f'</div>'
                 )
