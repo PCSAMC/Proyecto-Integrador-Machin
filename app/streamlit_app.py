@@ -288,11 +288,22 @@ def build_input_row():
 
 
 def find_neighbors(k=5):
-    cols  = [c for c in ["Gr_Liv_Area","Total_Bsmt_SF","Year_Built","Garage_Cars","Full_Bath"]
-             if c in raw_df.columns]
-    feats = raw_df[cols].fillna(0).values.astype(float)
-    query = np.array([gr_liv_area, total_bsmt_sf, year_built, garage_cars, full_bath], dtype=float)[:len(cols)]
-    std   = feats.std(axis=0); std[std == 0] = 1
+    qual_map = {q: i+1 for i, q in enumerate(QUAL_OPTS)}
+    hood_med = raw_df.groupby("Neighborhood")["Sale_Price"].median()
+
+    df_f = raw_df.copy()
+    df_f["_qual_num"] = df_f["Overall_Qual"].map(qual_map).fillna(5)
+    df_f["_hood_med"] = df_f["Neighborhood"].map(hood_med).fillna(hood_med.mean())
+
+    cols  = [c for c in ["Gr_Liv_Area","Total_Bsmt_SF","Year_Built","Garage_Cars",
+                         "Full_Bath","_qual_num","_hood_med"] if c in df_f.columns]
+    feats = df_f[cols].fillna(0).values.astype(float)
+
+    q_num    = qual_map.get(overall_qual, 5)
+    q_hood   = hood_med.get(neighborhood, hood_med.mean())
+    query    = np.array([gr_liv_area, total_bsmt_sf, year_built, garage_cars,
+                         full_bath, q_num, q_hood], dtype=float)[:len(cols)]
+    std      = feats.std(axis=0); std[std == 0] = 1
     return np.argsort(np.linalg.norm((feats - query) / std, axis=1))[:k]
 
 
