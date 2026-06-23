@@ -288,10 +288,17 @@ def build_input_row():
 
 
 def find_neighbors(k=5):
+    """
+    Búsqueda en 2 etapas:
+    1. Euclidiana (7 features) sobre propiedades con embedding → obtiene query_idx
+    2. FAISS (128D MLP) → encuentra los k más similares en espacio latente completo
+    """
     qual_map = {q: i+1 for i, q in enumerate(QUAL_OPTS)}
     hood_med = raw_df.groupby("Neighborhood")["Sale_Price"].median()
 
-    df_f = raw_df.copy()
+    # Limitar a las filas que tienen embedding
+    n_emb = len(sim.embeddings)
+    df_f = raw_df.iloc[:n_emb].copy()
     df_f["_qual_num"] = df_f["Overall_Qual"].map(qual_map).fillna(5)
     df_f["_hood_med"] = df_f["Neighborhood"].map(hood_med).fillna(hood_med.mean())
 
@@ -299,12 +306,18 @@ def find_neighbors(k=5):
                          "Full_Bath","_qual_num","_hood_med"] if c in df_f.columns]
     feats = df_f[cols].fillna(0).values.astype(float)
 
-    q_num    = qual_map.get(overall_qual, 5)
-    q_hood   = hood_med.get(neighborhood, hood_med.mean())
-    query    = np.array([gr_liv_area, total_bsmt_sf, year_built, garage_cars,
-                         full_bath, q_num, q_hood], dtype=float)[:len(cols)]
-    std      = feats.std(axis=0); std[std == 0] = 1
-    return np.argsort(np.linalg.norm((feats - query) / std, axis=1))[:k]
+    q_num  = qual_map.get(overall_qual, 5)
+    q_hood = hood_med.get(neighborhood, hood_med.mean())
+    query  = np.array([gr_liv_area, total_bsmt_sf, year_built, garage_cars,
+                       full_bath, q_num, q_hood], dtype=float)[:len(cols)]
+    std    = feats.std(axis=0); std[std == 0] = 1
+
+    # Propiedad más cercana en espacio raw → ancla para FAISS
+    query_idx = int(np.argmin(np.linalg.norm((feats - query) / std, axis=1)))
+
+    # FAISS busca en 128D (captura las 263 features del MLP)
+    result_df = sim.search(query_idx, k=k)
+    return result_df["idx"].values, result_df["price_usd"].values
 
 
 def make_chart(pred_usd, n_prices):
@@ -341,8 +354,7 @@ if predict_btn:
             total_sf = total_bsmt_sf + first_flr_sf + second_flr_sf
             age      = year_sold - year_built
             price_m2 = pred_usd / (gr_liv_area * 0.0929)
-            n_idx    = find_neighbors()
-            n_prices = sim.prices_usd[n_idx]
+            n_idx, n_prices = find_neighbors()
 
             st.markdown(f"""
             <div class="hero">
