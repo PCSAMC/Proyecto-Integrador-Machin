@@ -63,7 +63,11 @@ def log_sklearn_model(
             "RMSE_log": metrics["RMSE_log"],
         })
 
-        mlflow.sklearn.log_model(model, artifact_path=artifact_path)
+        mlflow.sklearn.log_model(
+            model,
+            artifact_path=artifact_path,
+            serialization_format="pickle",
+        )
         run_id = run.info.run_id
 
     print(f"[MLflow] {model_name:20s} → run_id={run_id[:8]}...  R²={metrics['R2']:.4f}  RMSE=${metrics['RMSE_USD']:,.0f}")
