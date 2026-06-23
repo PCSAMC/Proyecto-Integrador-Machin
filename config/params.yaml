@@ -74,7 +74,9 @@ automl:
 
 # ── MLflow ─────────────────────────────────────────────────
 mlflow:
-  tracking_uri: "sqlite:///mlflow.db"
+  # La BD vive dentro de mlruns/ (montada como volumen) para que
+  # los runs y métricas PERSISTAN en el host, no solo dentro del contenedor.
+  tracking_uri: "sqlite:///mlruns/mlflow.db"
   experiment_name: "ames_housing_grupo4"
   registered_model_name: "ames_price_predictor"
 
