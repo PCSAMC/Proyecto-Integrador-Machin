@@ -668,11 +668,11 @@ segmentos del mercado de Ames:
   table.header(
     [Vecindario], [Calidad], [Hab. (ft²)], [Predicción], [Similares (rango)],
   ),
-  [North\_Ames],  [Good],          [1.500], [\$190.414], [\$176k – \$192k],
-  [NridgHt],     [Very\_Excellent],[2.500], [\$358.200], [\$340k – \$375k],
-  [BrDale],      [Average],       [900],   [\$98.700],  [\$88k – \$110k],
-  [CollgCr],     [Good],          [1.800], [\$221.500], [\$205k – \$238k],
-  [OldTown],     [Below\_Average],[1.200], [\$129.300], [\$118k – \$142k],
+  [North\_Ames],        [Good],           [1.500], [\$190.414], [\$176k – \$192k],
+  [Northridge\_Heights],[Very\_Excellent], [2.500], [\$274.347], [\$190k – \$294k],
+  [Briardale],          [Average],        [900],   [\$156.996], [\$165k – \$180k],
+  [College\_Creek],     [Good],           [1.800], [\$191.848], [\$196k – \$245k],
+  [Old\_Town],          [Below\_Average], [1.200], [\$149.142], [\$130k – \$149k],
 )
 
 En todos los casos los 5 comparables recuperados pertenecen al mismo segmento de precio que
