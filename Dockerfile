@@ -14,6 +14,13 @@ WORKDIR /app
 # Instalar dependencias primero (mejor cache de capas)
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then \
+        pip install --no-cache-dir torch==2.2.2; \
+    else \
+        pip install --no-cache-dir torch==2.2.2+cpu \
+            --extra-index-url https://download.pytorch.org/whl/cpu; \
+    fi && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copiar el resto del proyecto

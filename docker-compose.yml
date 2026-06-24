@@ -8,7 +8,7 @@ services:
     container_name: ames_housing_grupo4
     ports:
       - "8501:8501"        # demo web Streamlit
-      - "5000:5000"        # MLflow UI
+      - "5001:5000"        # MLflow UI (host:5001 → container:5000; macOS AirPlay ocupa el 5000)
     volumes:
       # Persisten los artefactos generados en tu máquina,
       # para que el segundo arranque sea instantáneo.
