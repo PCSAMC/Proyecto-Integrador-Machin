@@ -222,9 +222,12 @@ def load_resources():
 cfg, pipeline, raw_df, sim = load_resources()
 hoods = sorted(raw_df["Neighborhood"].dropna().unique().tolist())
 
-QUAL_OPTS  = ["Very_Poor","Poor","Fair","Below_Average","Average",
-              "Above_Average","Good","Very_Good","Excellent","Very_Excellent"]
-GRADE_OPTS = ["Po","Fa","TA","Gd","Ex"]
+QUAL_OPTS      = ["Very_Poor","Poor","Fair","Below_Average","Average",
+                  "Above_Average","Good","Very_Good","Excellent","Very_Excellent"]
+QUAL_OPTS_ES   = ["Muy malo","Malo","Regular","Por debajo del promedio","Promedio",
+                  "Sobre el promedio","Bueno","Muy bueno","Excelente","Excepcional"]
+GRADE_OPTS     = ["Po","Fa","TA","Gd","Ex"]
+GRADE_OPTS_ES  = ["Malo","Regular","Promedio","Bueno","Excelente"]
 
 
 # ── Navbar ─────────────────────────────────────────────────────────────────────
@@ -242,26 +245,31 @@ c1, c2, c3 = st.columns(3, gap="medium")
 
 with c1:
     st.markdown('<div class="ph"><span class="ico">straighten</span>Superficies</div>', unsafe_allow_html=True)
-    gr_liv_area   = st.number_input("Habitable (ft²)",  min_value=300,  max_value=6000, value=1500, step=50)
-    total_bsmt_sf = st.number_input("Sotano (ft²)",     min_value=0,    max_value=3500, value=800,  step=50)
-    first_flr_sf  = st.number_input("Piso 1 (ft²)",     min_value=300,  max_value=4500, value=900,  step=50)
-    second_flr_sf = st.number_input("Piso 2 (ft²)",     min_value=0,    max_value=2500, value=0,    step=50)
-    garage_area   = st.number_input("Garaje (ft²)",     min_value=0,    max_value=1800, value=400,  step=25)
+    gr_liv_area   = st.number_input("Área habitable (ft²)",  min_value=300,  max_value=6000, value=1500, step=50)
+    total_bsmt_sf = st.number_input("Sótano (ft²)",          min_value=0,    max_value=3500, value=800,  step=50)
+    first_flr_sf  = st.number_input("Primer piso (ft²)",     min_value=300,  max_value=4500, value=900,  step=50)
+    second_flr_sf = st.number_input("Segundo piso (ft²)",    min_value=0,    max_value=2500, value=0,    step=50)
+    garage_area   = st.number_input("Garaje (ft²)",          min_value=0,    max_value=1800, value=400,  step=25)
 
 with c2:
     st.markdown('<div class="ph"><span class="ico">grade</span>Calidad</div>', unsafe_allow_html=True)
-    overall_qual = st.selectbox("Calidad general", QUAL_OPTS,  index=QUAL_OPTS.index("Good"))
-    kitchen_qual = st.selectbox("Cocina",          GRADE_OPTS, index=GRADE_OPTS.index("Gd"))
-    exter_qual   = st.selectbox("Exterior",        GRADE_OPTS, index=GRADE_OPTS.index("TA"))
-    garage_cars  = st.number_input("Autos en garaje",  min_value=0, max_value=5, value=2, step=1)
-    full_bath    = st.number_input("Banos completos",  min_value=0, max_value=5, value=2, step=1)
+    overall_qual_es = st.selectbox("Calidad general de la vivienda", QUAL_OPTS_ES, index=QUAL_OPTS_ES.index("Bueno"))
+    overall_qual    = QUAL_OPTS[QUAL_OPTS_ES.index(overall_qual_es)]
+    kitchen_qual_es = st.selectbox("Calidad de la cocina",           GRADE_OPTS_ES, index=GRADE_OPTS_ES.index("Bueno"))
+    kitchen_qual    = GRADE_OPTS[GRADE_OPTS_ES.index(kitchen_qual_es)]
+    exter_qual_es   = st.selectbox("Calidad del exterior",           GRADE_OPTS_ES, index=GRADE_OPTS_ES.index("Promedio"))
+    exter_qual      = GRADE_OPTS[GRADE_OPTS_ES.index(exter_qual_es)]
+    garage_cars  = st.number_input("Autos en garaje",    min_value=0, max_value=5, value=2, step=1)
+    full_bath    = st.number_input("Baños completos",    min_value=0, max_value=5, value=2, step=1)
 
 with c3:
-    st.markdown('<div class="ph"><span class="ico">location_on</span>Ubicacion y Tiempo</div>', unsafe_allow_html=True)
-    year_built   = st.number_input("Ano de construccion", min_value=1872, max_value=2010, value=1990, step=1)
-    year_sold    = st.number_input("Ano de venta",        min_value=2006, max_value=2010, value=2008, step=1)
-    neighborhood = st.selectbox("Vecindario", hoods, index=hoods.index("North_Ames"))
-    half_bath    = st.number_input("Medios banos", min_value=0, max_value=3, value=0, step=1)
+    st.markdown('<div class="ph"><span class="ico">location_on</span>Ubicación y Tiempo</div>', unsafe_allow_html=True)
+    year_built   = st.number_input("Año de construcción", min_value=1872, max_value=2010, value=1990, step=1)
+    year_sold    = st.number_input("Año de venta (2006–2010)", min_value=2006, max_value=2010, value=2008, step=1)
+    hoods_display = [h.replace("_", " ") for h in hoods]
+    hood_display  = st.selectbox("Vecindario", hoods_display, index=hoods_display.index("North Ames"))
+    neighborhood  = hoods[hoods_display.index(hood_display)]
+    half_bath    = st.number_input("Medios baños", min_value=0, max_value=3, value=0, step=1)
 
 st.markdown('<div style="height:14px"></div>', unsafe_allow_html=True)
 _, btn_col, _ = st.columns([1.2, 1, 1.2])
@@ -363,34 +371,41 @@ if predict_btn:
               <div class="h-rng" translate="no">Intervalo &nbsp;${pred_usd-err:,.0f} &mdash; ${pred_usd+err:,.0f} &nbsp;(&plusmn;7%)</div>
               <div class="h-row">
                 <div class="h-chip"><div class="h-cl"><span class="ico">open_with</span>Habitable</div><div class="h-cv" translate="no">{gr_liv_area:,} ft²</div></div>
-                <div class="h-chip"><div class="h-cl"><span class="ico">layers</span>Total sf</div><div class="h-cv" translate="no">{total_sf:,} ft²</div></div>
+                <div class="h-chip"><div class="h-cl"><span class="ico">layers</span>Superficie total</div><div class="h-cv" translate="no">{total_sf:,} ft²</div></div>
                 <div class="h-chip"><div class="h-cl"><span class="ico">calendar_today</span>Antiguedad</div><div class="h-cv" translate="no">{age} anos</div></div>
                 <div class="h-chip"><div class="h-cl"><span class="ico">payments</span>Precio/m²</div><div class="h-cv" translate="no">${price_m2:,.0f}</div></div>
                 <div class="h-chip"><div class="h-cl"><span class="ico">location_on</span>Vecindario</div><div class="h-cv" translate="no" style="font-size:11px">{_h.escape(neighborhood)}</div></div>
               </div>
-              <div class="h-bdg" translate="no"><span class="ico" style="font-size:12px">auto_awesome</span>Ridge Regression &nbsp;&middot;&nbsp; R²=0.9359 &nbsp;&middot;&nbsp; RMSE=$20,035</div>
+              <div class="h-bdg" translate="no"><span class="ico" style="font-size:12px">auto_awesome</span>Modelo Ridge &nbsp;&middot;&nbsp; Precisión: 93.6% &nbsp;&middot;&nbsp; Error promedio: $20,035</div>
             </div>
             """, unsafe_allow_html=True)
 
             st.markdown('<div class="sdiv"><div class="sdiv-t"><span class="ico">search</span>5 propiedades mas similares</div><div class="sdiv-l"></div></div>', unsafe_allow_html=True)
 
+            qual_es_map = dict(zip(QUAL_OPTS, QUAL_OPTS_ES))
+            seg_es_map  = {
+                "<$120k": "Económico (< $120k)",
+                "$120k-$200k": "Medio ($120k–$200k)",
+                "$200k-$300k": "Alto ($200k–$300k)",
+                ">$300k": "Lujo (> $300k)",
+            }
             cards = ""
             for rank, (idx, price) in enumerate(zip(n_idx, n_prices), 1):
-                seg   = _h.escape(str(sim.segments[idx]))
-                rd    = raw_df.iloc[idx]
-                area  = int(rd["Gr_Liv_Area"])    if "Gr_Liv_Area"    in rd.index else "—"
-                qual  = _h.escape(str(rd["Overall_Qual"])) if "Overall_Qual" in rd.index else "—"
-                yr    = int(rd["Year_Built"])      if "Year_Built"     in rd.index else "—"
-                hood  = _h.escape(str(rd["Neighborhood"])) if "Neighborhood" in rd.index else "—"
-                bsmt  = int(rd["Total_Bsmt_SF"])   if "Total_Bsmt_SF"  in rd.index else "—"
-                cars  = int(rd["Garage_Cars"])      if "Garage_Cars"    in rd.index else "—"
+                seg_raw = str(sim.segments[idx])
+                seg     = _h.escape(seg_es_map.get(seg_raw, seg_raw))
+                rd      = raw_df.iloc[idx]
+                area    = int(rd["Gr_Liv_Area"])    if "Gr_Liv_Area"   in rd.index else "—"
+                qual_raw= str(rd["Overall_Qual"])   if "Overall_Qual"  in rd.index else "—"
+                qual    = _h.escape(qual_es_map.get(qual_raw, qual_raw))
+                yr      = int(rd["Year_Built"])     if "Year_Built"    in rd.index else "—"
+                hood    = _h.escape(str(rd["Neighborhood"]).replace("_"," ")) if "Neighborhood" in rd.index else "—"
                 cards += (
                     f'<div class="scard" style="animation-delay:{rank*0.05:.2f}s">'
                     f'<div class="sc-n" translate="no">0{rank}</div>'
                     f'<div class="sc-p" translate="no">${int(price):,}</div>'
-                    f'<div class="sc-d" translate="no">{area} ft² &middot; {yr}</div>'
-                    f'<div class="sc-d" translate="no">Sótano: {bsmt} ft² &middot; Garaje: {cars}</div>'
-                    f'<div class="sc-d">{qual} &middot; {hood}</div>'
+                    f'<div class="sc-d" translate="no">{area} ft² &middot; Año {yr}</div>'
+                    f'<div class="sc-d">{qual}</div>'
+                    f'<div class="sc-d">{hood}</div>'
                     f'<div class="sc-seg" translate="no">{seg}</div>'
                     f'</div>'
                 )
