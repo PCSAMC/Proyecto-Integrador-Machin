@@ -1,6 +1,9 @@
 # ============================================================
 #  Dockerfile — Grupo 4 Ames Housing
 #  Empaqueta TODO el proyecto: el docente solo necesita Docker.
+#
+#  Por defecto usa requirements.txt (Linux x86/amd64).
+#  En macOS Apple Silicon cambia REQS en docker-compose.yml.
 # ============================================================
 FROM python:3.11-slim
 
@@ -11,17 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Instalar dependencias primero (mejor cache de capas)
-COPY requirements.txt .
+# El archivo de dependencias se selecciona via build arg.
+# Valor por defecto: requirements.txt (Linux/x86).
+# Para macOS: REQS=requirements-macos.txt (ver docker-compose.yml).
+ARG REQS=requirements.txt
+COPY requirements*.txt ./
 RUN pip install --no-cache-dir --upgrade pip && \
-    ARCH=$(uname -m) && \
-    if [ "$ARCH" = "aarch64" ]; then \
-        pip install --no-cache-dir torch==2.2.2; \
-    else \
-        pip install --no-cache-dir torch==2.2.2+cpu \
-            --extra-index-url https://download.pytorch.org/whl/cpu; \
-    fi && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r ${REQS}
 
 # Copiar el resto del proyecto
 COPY . .

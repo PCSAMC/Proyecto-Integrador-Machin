@@ -4,7 +4,12 @@
 # ============================================================
 services:
   ames-housing:
-    build: .
+    build:
+      context: .
+      args:
+        # Linux/x86 (default): requirements.txt
+        # macOS Apple Silicon:  requirements-macos.txt
+        REQS: requirements.txt
     container_name: ames_housing_grupo4
     ports:
       - "8501:8501"        # demo web Streamlit

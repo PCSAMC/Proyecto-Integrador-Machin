@@ -1,4 +1,4 @@
-# 🏠 Predicción de Precios Inmobiliarios — Ames Housing
+# Predicción de Precios Inmobiliarios — Ames Housing
 
 **Grupo 4 · SIS-351 Machine Learning · UCB «San Pablo» · 2026**
 Metodología **CRISP-DM** · Dataset **Ames Housing** (OpenML ID 41211)
@@ -10,7 +10,7 @@ Sistema de tasación de viviendas que integra tres mini proyectos articulados:
 
 ---
 
-## 🚀 Cómo ejecutarlo
+## Cómo ejecutarlo
 
 Hay tres formas, de la más fácil a la más manual.
 
@@ -23,15 +23,21 @@ docker compose up --build
 ```
 
 En el primer arranque entrena todo el pipeline (unos minutos) y luego abre la demo en:
-**http://localhost:8501**
+**http://localhost:8501** · MLflow UI en **http://localhost:5001**
 
 > El segundo arranque es instantáneo (los modelos quedan guardados).
+
+**macOS Apple Silicon (M1/M2/M3/M4):** antes de correr, abre `docker-compose.yml` y cambia
+`REQS: requirements.txt` por `REQS: requirements-macos.txt` en la sección `args`.
 
 ### Opción 2 · Local (con Python 3.11)
 
 ```bash
 # 1. Instalar dependencias
+#    Linux / Windows:
 pip install -r requirements.txt
+#    macOS Apple Silicon:
+pip install -r requirements-macos.txt
 
 # 2. Reproducir TODO el pipeline de una sola vez
 python run_all.py
@@ -46,7 +52,7 @@ No hace falta ejecutar nada: **los notebooks en `notebooks/` ya incluyen sus res
 
 ---
 
-## 📂 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 Proyecto-Integrador/
@@ -65,7 +71,8 @@ Proyecto-Integrador/
 ├── reports/                  Informe final + figuras
 ├── run_all.py                Ejecuta los 6 notebooks en orden
 ├── Dockerfile / docker-compose.yml
-├── requirements.txt
+├── requirements.txt          Dependencias Linux/x86 (Docker por defecto)
+├── requirements-macos.txt    Dependencias macOS Apple Silicon
 └── README.md
 ```
 
@@ -73,7 +80,7 @@ Proyecto-Integrador/
 
 ---
 
-## 🔧 Pipeline (CRISP-DM)
+## Pipeline (CRISP-DM)
 
 | Fase CRISP-DM | Notebook | Qué hace |
 |---|---|---|
@@ -86,7 +93,7 @@ Proyecto-Integrador/
 
 ---
 
-## 📊 Resultados principales
+## Resultados principales
 
 | Modelo | R² (test) | RMSE (USD) |
 |---|---|---|
@@ -97,11 +104,11 @@ Proyecto-Integrador/
 | MLP (Deep Learning) | 0,8619 | $29.401 |
 
 - **Recuperación de similares (FAISS):** Precisión@5 = **70,4%** · 196× más rápido que NearestNeighbors
-- **Monitoreo (PSI):** trigger de reentrenamiento automático cuando PSI ≥ 0,25
+- **Monitoreo (PSI):** trigger de reentrenamiento automático cuando PSI >= 0,25
 
 ---
 
-## 🔁 Reproducibilidad
+## Reproducibilidad
 
 - Semilla global `random_state = 42` en todo el proyecto
 - Partición estratificada por quintiles de precio (70 / 15 / 15)
